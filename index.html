@@ -1,41 +1,54 @@
 const fs = require('fs');
 
+// Read the file content
 const fileContent = fs.readFileSync('index.html', 'utf8');
+
+// Split content into lines
 const lines = fileContent.split('\n');
 
+// Counters
 let htmlLines = 0;
 let cssLines = 0;
 let jsLines = 0;
 
+// Flags to track context
 let inStyle = false;
 let inScript = false;
 
 for (let line of lines) {
   const trimmed = line.trim();
 
-  if (trimmed.includes('<style')) inStyle = true;
-  if (trimmed.includes('</style')) {
+  // Check for style block
+  if (trimmed.includes('<style')) {
+    inStyle = true;
+    continue;
+  }
+  if (trimmed.includes('</style>')) {
     inStyle = false;
-    cssLines++;
     continue;
   }
 
-  if (trimmed.includes('<script')) inScript = true;
-  if (trimmed.includes('</script')) {
+  // Check for script block
+  if (trimmed.includes('<script')) {
+    inScript = true;
+    continue;
+  }
+  if (trimmed.includes('</script>')) {
     inScript = false;
-    jsLines++;
     continue;
   }
 
+  // Count lines
   if (inStyle) {
-    cssLines++;
+    if (trimmed) cssLines++;
   } else if (inScript) {
-    jsLines++;
+    if (trimmed) jsLines++;
   } else {
-    if (trimmed !== '') htmlLines++;
+    if (trimmed) htmlLines++;
   }
 }
 
+// Output the results
 console.log(`HTML lines: ${htmlLines}`);
 console.log(`CSS lines: ${cssLines}`);
 console.log(`JS lines: ${jsLines}`);
